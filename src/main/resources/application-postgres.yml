@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:trustvault}
+    username: ${DB_USER:trustvault_app}
+    password: ${DB_PASSWORD:change-me}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    user: ${DB_MIGRATION_USER:trustvault_migrator}
+    password: ${DB_MIGRATION_PASSWORD:change-me-migration}
+    locations:
+      - classpath:db/migration
+      - classpath:db/migration-postgresql

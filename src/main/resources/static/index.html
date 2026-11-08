@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>TrustVault — Secure document workspace</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div id="login-screen" class="login-shell">
+    <div class="login-card">
+      <div class="brand-mark">TV</div>
+      <p class="eyebrow">SECURE DOCUMENT WORKSPACE</p>
+      <h1>TrustVault</h1>
+      <p class="muted intro">Private by permission. Accountable by design.</p>
+      <form id="login-form" class="stack">
+        <label>Email address<input id="login-email" type="email" autocomplete="username" required value="owner@trustvault.local"></label>
+        <label>Password<input id="login-password" type="password" autocomplete="current-password" required value="Owner@12345"></label>
+        <button class="btn primary full" type="submit">Sign in securely</button>
+        <p id="login-error" class="form-error" role="alert"></p>
+      </form>
+      <div class="demo-hint"><strong>Demo accounts</strong><span>Owner · owner@trustvault.local / Owner@12345</span><span>Viewer · viewer@trustvault.local / Viewer@12345</span><span>Admin · admin@trustvault.local / Admin@12345</span></div>
+      <p class="tiny muted">Demo credentials only. Change them before using real data.</p>
+    </div>
+    <div class="login-side"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="side-copy"><span class="pill">DOCUMENT ACCESS · VERIFIED</span><h2>Every document has a boundary.<br><em>Every action leaves a trace.</em></h2><p>Named access, immediate revocation, and an audit trail designed to make document activity reviewable.</p><div class="side-stats"><div><b>01</b><span>Per-file grants</span></div><div><b>02</b><span>Server-side checks</span></div><div><b>03</b><span>HMAC audit chain</span></div></div></div></div>
+  </div>
+
+  <div id="app-screen" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark small">TV</div><div><strong>TrustVault</strong><span>SECURE WORKSPACE</span></div></div>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav id="main-nav">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-item" data-view="documents"><span class="nav-icon">▤</span> Documents</button>
+        <button class="nav-item owner-only" data-view="upload"><span class="nav-icon">＋</span> Upload file</button>
+        <button class="nav-item admin-only hidden" data-view="users"><span class="nav-icon">♙</span> User accounts</button>
+        <button class="nav-item admin-only hidden" data-view="audit"><span class="nav-icon">≋</span> Audit activity</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="security-note"><span class="status-dot"></span><div><strong>Vault protected</strong><small>Private storage active</small></div></div><button id="logout-btn" class="logout-btn">↗ Sign out</button></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar"><div><span class="eyebrow" id="top-eyebrow">SECURE WORKSPACE</span><h1 id="view-title">Overview</h1></div><div class="user-chip"><div id="avatar" class="avatar">U</div><div><strong id="user-name">User</strong><span id="user-role">ROLE</span></div></div></header>
+      <div id="toast" class="toast hidden" role="status"></div>
+
+      <section id="view-dashboard" class="view-section">
+        <div class="welcome-row"><div><p class="muted">YOUR PRIVATE DOCUMENT SPACE</p><h2 id="welcome-title">Welcome back</h2><p class="muted">Access is checked on the server for every document request.</p></div><div class="secure-badge"><span class="status-dot"></span> SESSION ACTIVE</div></div>
+        <div id="owner-dashboard" class="metric-grid">
+          <article class="metric-card"><span>Accessible documents</span><strong id="metric-docs">—</strong><small>Owned or explicitly shared</small></article>
+          <article class="metric-card"><span>My role</span><strong id="metric-role">—</strong><small>Role-based capabilities</small></article>
+          <article class="metric-card"><span>Access model</span><strong>Per file</strong><small>No folder inheritance</small></article>
+        </div>
+        <div id="admin-dashboard" class="metric-grid hidden">
+          <article class="metric-card"><span>Active accounts</span><strong id="admin-users">—</strong><small>Registered identities</small></article>
+          <article class="metric-card"><span>Stored documents</span><strong id="admin-docs">—</strong><small>Non-deleted records</small></article>
+          <article class="metric-card"><span>Audit events</span><strong id="admin-audit">—</strong><small>Append-only event history</small></article>
+          <article class="metric-card"><span>Active grants</span><strong id="admin-grants">—</strong><small>Named user permissions</small></article>
+        </div>
+        <div class="panel-grid">
+          <article class="panel"><div class="panel-heading"><div><span class="eyebrow">SECURITY MODEL</span><h3>How TrustVault protects a file</h3></div></div><div class="security-steps"><div><span>01</span><div><b>Named grant</b><small>An owner assigns READ or EDIT to one account.</small></div></div><div><span>02</span><div><b>Check every request</b><small>The API verifies the current grant before metadata or bytes are returned.</small></div></div><div><span>03</span><div><b>Record the outcome</b><small>Allowed and denied operations are linked by an HMAC chain.</small></div></div></div></article>
+          <article class="panel audit-health"><span class="eyebrow">AUDIT INTEGRITY</span><h3>Evidence, not just activity</h3><p class="muted">Administrators can verify the HMAC chain against the audit key kept outside the database.</p><div class="audit-health-foot"><span class="status-dot"></span><b>Hash-chain verification available</b></div></article>
+        </div>
+      </section>
+
+      <section id="view-documents" class="view-section hidden">
+        <div class="section-intro"><div><h2>Document library</h2><p class="muted">Only documents you own or that are explicitly shared with you appear here.</p></div><button class="btn primary owner-only" data-goto="upload">＋ Upload document</button></div>
+        <div class="filter-bar"><input id="search-q" placeholder="Search title or filename"><input id="search-owner" placeholder="Owner email"><input id="search-category" placeholder="Category"><input id="search-from" type="date" aria-label="From date"><input id="search-to" type="date" aria-label="To date"><button id="search-btn" class="btn dark">Search</button><button id="clear-search" class="btn ghost">Clear</button></div>
+        <div class="panel table-panel"><div class="table-heading"><div><span class="eyebrow">YOUR ACCESSIBLE FILES</span><h3>Documents <span id="document-count" class="count-pill">0</span></h3></div><span class="tiny muted">Maximum 200 results</span></div><div class="table-scroll"><table><thead><tr><th>Document</th><th>Owner</th><th>Category</th><th>Access</th><th>Last updated</th><th></th></tr></thead><tbody id="documents-table"><tr><td colspan="6" class="empty-state">Loading documents…</td></tr></tbody></table></div></div>
+      </section>
+
+      <section id="view-upload" class="view-section hidden">
+        <div class="section-intro"><div><h2>Upload a document</h2><p class="muted">New files are private to you until you grant access.</p></div></div>
+        <div class="upload-layout"><form id="upload-form" class="panel form-panel stack"><div class="form-heading"><span class="eyebrow">NEW PRIVATE FILE</span><h3>Document details</h3></div><label>Document title<input name="title" maxlength="180" placeholder="e.g. Supplier agreement — Q4" required></label><label>Category<input name="category" maxlength="80" placeholder="e.g. Contracts, Finance, HR" required></label><label>Description<textarea name="description" maxlength="1000" rows="3" placeholder="Optional context for authorised users"></textarea></label><label class="file-drop"><span class="file-icon">⇧</span><b>Choose a file to protect</b><small>PDF, PNG, JPG, JPEG or UTF-8 TXT · Max 10 MB</small><input name="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.txt" required></label><button class="btn primary" type="submit">Upload securely</button><p id="upload-error" class="form-error"></p></form><aside class="panel tips-panel"><span class="eyebrow">BEFORE YOU UPLOAD</span><h3>Private by default</h3><ul><li>Files are stored outside the public web directory.</li><li>Original filenames are never used as storage paths.</li><li>The server checks both extension and file signature.</li><li>Downloads are streamed only after a fresh permission check.</li><li>Files are sent as attachments with caching disabled.</li></ul></aside></div>
+      </section>
+
+      <section id="view-users" class="view-section hidden">
+        <div class="section-intro"><div><h2>User accounts</h2><p class="muted">Admins can create owner and viewer identities and disable accounts.</p></div></div>
+        <div class="admin-grid"><form id="create-user-form" class="panel form-panel stack"><div class="form-heading"><span class="eyebrow">IDENTITY MANAGEMENT</span><h3>Create account</h3></div><label>Display name<input name="displayName" maxlength="120" required></label><label>Email<input name="email" type="email" required></label><label>Temporary password<input name="password" type="password" minlength="12" maxlength="72" required><small class="muted">At least 12 characters. Share it securely and ask the user to change it.</small></label><label>Role<select name="role"><option value="OWNER">Document owner</option><option value="VIEWER">Viewer</option></select></label><button class="btn primary" type="submit">Create user</button><p id="user-error" class="form-error"></p></form><div class="panel table-panel"><div class="table-heading"><div><span class="eyebrow">REGISTERED IDENTITIES</span><h3>Users</h3></div></div><div class="table-scroll"><table><thead><tr><th>Person</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody id="users-table"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody></table></div></div></div>
+      </section>
+
+      <section id="view-audit" class="view-section hidden">
+        <div class="section-intro"><div><h2>Audit activity</h2><p class="muted">Includes successful operations and denied access attempts.</p></div><button id="verify-audit" class="btn dark">✓ Verify chain</button></div>
+        <div id="verify-result" class="verify-result hidden"></div>
+        <div class="panel table-panel"><div class="table-heading"><div><span class="eyebrow">TAMPER-EVIDENT EVENT LOG</span><h3>Recent events</h3></div><span class="tiny muted">Newest first · Up to 500</span></div><div class="table-scroll"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Outcome</th><th>Event hash</th></tr></thead><tbody id="audit-table"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody></table></div></div>
+      </section>
+
+      <footer class="app-footer"><span>TRUSTVAULT · RISE HIRING CHALLENGE</span><span>Server-authorised · Per-document ACL · HMAC audit chain</span></footer>
+    </main>
+  </div>
+
+  <div id="document-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-backdrop" data-close-modal></div><div class="modal-card"><div class="modal-head"><div><span class="eyebrow">DOCUMENT DETAILS</span><h2 id="modal-title">Document</h2></div><button class="icon-btn" data-close-modal aria-label="Close">×</button></div><div id="modal-body"></div></div></div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: trustvault
+      POSTGRES_USER: trustvault_root
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in your environment}
+      APP_DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in your environment}
+      MIGRATION_DB_PASSWORD: ${DB_MIGRATION_PASSWORD:?Set DB_MIGRATION_PASSWORD in your environment}
+    volumes:
+      - trustvault-db:/var/lib/postgresql/data
+      - ./ops/postgres-init/01-roles.sh:/docker-entrypoint-initdb.d/01-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trustvault_root -d trustvault"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: trustvault
+      DB_USER: trustvault_app
+      DB_MIGRATION_USER: trustvault_migrator
+      DB_MIGRATION_PASSWORD: ${DB_MIGRATION_PASSWORD:?Set DB_MIGRATION_PASSWORD in your environment}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in your environment}
+      PORT: 8080
+      TRUSTVAULT_STORAGE_DIR: /data/private-files
+      TRUSTVAULT_COOKIE_SECURE: ${TRUSTVAULT_COOKIE_SECURE:-false}
+      TRUSTVAULT_AUDIT_HMAC_KEY: ${TRUSTVAULT_AUDIT_HMAC_KEY:?Set TRUSTVAULT_AUDIT_HMAC_KEY in your environment}
+      TRUSTVAULT_FILE_ENCRYPTION_KEY: ${TRUSTVAULT_FILE_ENCRYPTION_KEY:?Set TRUSTVAULT_FILE_ENCRYPTION_KEY in your environment}
+      TRUSTVAULT_SEED_DEMO: "false"
+      TRUSTVAULT_BOOTSTRAP_ADMIN_EMAIL: ${TRUSTVAULT_BOOTSTRAP_ADMIN_EMAIL:?Set TRUSTVAULT_BOOTSTRAP_ADMIN_EMAIL for first startup}
+      TRUSTVAULT_BOOTSTRAP_ADMIN_PASSWORD: ${TRUSTVAULT_BOOTSTRAP_ADMIN_PASSWORD:?Set TRUSTVAULT_BOOTSTRAP_ADMIN_PASSWORD (16+ chars) for first startup}
+    ports:
+      - "8080:8080"
+    volumes:
+      - trustvault-files:/data/private-files
+
+volumes:
+  trustvault-db:
+  trustvault-files:
